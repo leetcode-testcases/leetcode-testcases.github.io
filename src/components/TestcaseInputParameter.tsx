@@ -12,7 +12,7 @@ import styles from './TestcaseInputParameter.module.css'
 function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumber, removeParameter }: TestcaseInputParameterProps) {
     // Currently uses states to store string values of inputs that could contain negative numbers
     const [numberMinValueInput, setNumberMinValueInput] = useState('0')
-    const [numberMaxValueInput, setNumberMaxValueInput] = useState('1000')
+    const [numberMaxValueInput, setNumberMaxValueInput] = useState('10000')
 
 
     const removeParameterButtonHandler = () => {
