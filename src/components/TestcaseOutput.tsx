@@ -56,7 +56,7 @@ function TestcaseOutput({ parameters }: TestcaseOutputProps) {
     const disableGenerate = parameters.length === 0;
 
     return (
-        <div className="border border-solid rounded p-2">
+        <div className="border border-solid rounded shadow-lg p-2">
             <div className="flex items-center">
                 <button disabled={disableGenerate} className={styles.generateParametersButton} onClick={generateParametersHandler} title={disableGenerate ? "Add at least 1 parameter" : "Generate testcases"}>Generate</button>
                 <label htmlFor={selectId} className="mx-2 text-sm font-medium text-gray-900">Number of testcases</label>
@@ -99,7 +99,7 @@ function TestcaseOutput({ parameters }: TestcaseOutputProps) {
                 </>
             }
 
-            <ReactCodeMirror value={testcaseOutputString} height="fit" maxHeight="20vh" theme="light" editable={false}></ReactCodeMirror>
+            <ReactCodeMirror value={testcaseOutputString} height="fit" maxHeight="10rem" theme="light" editable={false}></ReactCodeMirror>
         </div>
     )
 }

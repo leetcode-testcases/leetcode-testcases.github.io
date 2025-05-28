@@ -321,7 +321,7 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
     }
 
     return (
-        <div className="border border-solid bg-gray-200 rounded p-4 my-2 shadow-lg">
+        <div className="border border-solid bg-gray-200 rounded p-4 my-2 shadow-lg h-full">
             <div className="flex justify-between">
                 <h6 className="text-xl font-semibold">Parameter #{parameterNumber + 1}</h6>
                 <button className={styles.removeParameterButton} onClick={removeParameterButtonHandler}>

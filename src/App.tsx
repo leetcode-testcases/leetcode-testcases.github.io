@@ -72,7 +72,7 @@ function App() {
         <>
             <div className="relative min-h-full">
                 <Navbar />
-                <div className="px-8 py-4">
+                <div className="px-8 pt-4 pb-68">
                     <TestcaseInputParameters
                         addParameter={addParameter}
                         removeAllParameters={removeAllParameters}
@@ -81,7 +81,7 @@ function App() {
                         parameters={parameters}
                     />
                 </div>
-                <footer className="sticky bottom-0 w-full bg-white">
+                <footer className="fixed bottom-0 w-full h-64 border-t border-t-gray-500 bg-white">
                     <div className="px-8 py-4">
                         <TestcaseOutput
                             parameters={parameters}

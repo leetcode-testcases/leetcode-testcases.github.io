@@ -14,7 +14,7 @@ function TestcaseInputParameters({ parameters, addParameter, removeAllParameters
 
     return (
         <>
-            <div className="border border-solid rounded p-4 shadow-lg">
+            <div className="border border-solid rounded shadow-lg p-4">
                 <h6 className="text-3xl font-semibold">Parameters</h6>
                 <br />
                 <button className={`${styles.addParameterButton} mr-1`} onClick={addParameterHandler} title={parameters.length < 10 ? 'Add parameter' : 'Max parameters reached (10)'} disabled={parameters.length < 10 ? false : true}>
