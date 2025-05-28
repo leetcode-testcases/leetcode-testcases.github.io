@@ -14,7 +14,6 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
     const [numberMinValueInput, setNumberMinValueInput] = useState('0')
     const [numberMaxValueInput, setNumberMaxValueInput] = useState('10000')
 
-
     const removeParameterButtonHandler = () => {
         removeParameter(parameterNumber)
     }
@@ -97,6 +96,9 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
         if (isNaN(parsedNumber)) {
             parsedNumber = 1
         }
+
+        parsedNumber = Math.max(parsedNumber, parseInt(event.target.min))
+        parsedNumber = Math.min(parsedNumber, parseInt(event.target.max))
 
         setParameter(parameterNumber, {
             ...testcaseParameter,
@@ -311,6 +313,12 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
         })
     }
 
+    const handleStringGeneratePalindromeChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        setParameter(parameterNumber, {
+            ...testcaseParameter,
+            stringGeneratePalindrome: event.target.checked
+        })
+    }
 
     return (
         <div className="border border-solid bg-gray-200 rounded p-4 my-2 shadow-lg">
@@ -674,6 +682,12 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
                             label="Custom characters"
                         />
                     }
+                    <label className="mr-2 text-sm font-medium underline text-gray-900">String Options</label>
+                    <CheckboxField
+                        onChangeHandler={handleStringGeneratePalindromeChange}
+                        checked={testcaseParameter.stringGeneratePalindrome}
+                        label="Generate palindrome"
+                    />
                 </>
             }
         </div>

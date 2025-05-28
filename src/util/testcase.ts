@@ -141,9 +141,21 @@ function generateTestcaseString(testcaseParameter: TestcaseParameter): string {
         throw new Error('Random string character set is empty, please select at least 1 type of character to add to string')
     }
 
-    for (let i = 0; i < stringLength; i++) {
+    let generateLength = stringLength;
+    if (testcaseParameter.stringGeneratePalindrome) {
+        generateLength = Math.floor(stringLength / 2) + (stringLength % 2 == 1 ? 1 : 0);
+    }
+
+    for (let i = 0; i < generateLength; i++) {
         let randomIndex = Math.floor(Math.random() * characters.length)
         randomStringChars.push(characters[randomIndex])
+    }
+
+    if (testcaseParameter.stringGeneratePalindrome) {
+        let randomStringCharsLength = randomStringChars.length;
+        for (let i = randomStringCharsLength - (stringLength % 2 == 1 ? 2 : 1); i >= 0; i--) {
+            randomStringChars.push(randomStringChars[i]);
+        }
     }
 
     return randomStringChars.join('')

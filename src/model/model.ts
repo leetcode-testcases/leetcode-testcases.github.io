@@ -54,6 +54,7 @@ export type TestcaseParameter = {
     stringIncludeDigits: boolean;
     stringIncludeCustomCharacters: boolean;
     stringCustomCharacters: string[];
+    stringGeneratePalindrome: boolean;
     arrayDimension1OptionLength: OptionLength;
     arrayDimension1Length: number;
     arrayDimension1RandomMinLength: number;
