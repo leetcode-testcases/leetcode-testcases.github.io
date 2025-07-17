@@ -1,8 +1,8 @@
 
-import { type TestcaseParameter } from '../model/model';
+import { type TestcaseParameter } from '../model/model'
 
 export function generateTestcase(testcaseParameters: TestcaseParameter[]): string[] {
-    let testcaseLines: string[] = [];
+    let testcaseLines: string[] = []
 
     for (let testcaseParameter of testcaseParameters) {
         switch (testcaseParameter.parameterType) {
@@ -29,7 +29,7 @@ export function generateTestcase(testcaseParameters: TestcaseParameter[]): strin
 
 
 function generateTestcaseNumber(testcaseParameter: TestcaseParameter): number {
-    let randomNumber: number = 0;
+    let randomNumber: number = 0
     switch (testcaseParameter.numberType) {
         case 'rangeWithExclude':
             randomNumber = generateNumberInRange(
@@ -43,17 +43,17 @@ function generateTestcaseNumber(testcaseParameter: TestcaseParameter): number {
             if (testcaseParameter.numberIncludeValues.length) {
                 let randomIndex = Math.floor(Math.random() * testcaseParameter.numberIncludeValues.length)
                 randomNumber = testcaseParameter.numberIncludeValues[randomIndex]
+
+                if (testcaseParameter.numberOptionIncludeDecimal) {
+                    randomNumber = Math.floor(randomNumber)
+                }
             } else {
                 throw new Error('Please add at least 1 number to included values to select number from')
             }
             break
     }
 
-    if (testcaseParameter.numberOptionIncludeDecimal) {
-        return randomNumber
-    } else {
-        return Math.floor(randomNumber)
-    }
+    return randomNumber
 }
 
 
@@ -68,12 +68,16 @@ function generateNumberInRange(minValue: number, maxValue: number, excludeValues
     }
 
     if (excludeValues.length === 0 || includeDecimal) {
-        return minValue + Math.random() * (maxValue + (includeDecimal ? 0 : 1) - minValue)
+        let generatedNumber = minValue + Math.random() * (maxValue + (includeDecimal ? 0 : 1) - minValue)
+        if (!includeDecimal) {
+            generatedNumber = Math.floor(generatedNumber)
+        }
+        return generatedNumber
     } else {
         let excludeValuesSet = new Set(excludeValues)
         let excludeValuesSorted = Array.from(excludeValuesSet).filter((currNum) => currNum >= minValue && currNum <= maxValue).sort()
 
-        let numValues = maxValue - minValue + 1 - excludeValuesSorted.length;
+        let numValues = maxValue - minValue + 1 - excludeValuesSorted.length
         if (numValues <= 0) {
             throw new Error('No possible numbers can be generated from number range and excluded values')
         }
@@ -141,9 +145,9 @@ function generateTestcaseString(testcaseParameter: TestcaseParameter): string {
         throw new Error('Random string character set is empty, please select at least 1 type of character to add to string')
     }
 
-    let generateLength = stringLength;
+    let generateLength = stringLength
     if (testcaseParameter.stringGeneratePalindrome) {
-        generateLength = Math.floor(stringLength / 2) + (stringLength % 2 == 1 ? 1 : 0);
+        generateLength = Math.floor(stringLength / 2) + (stringLength % 2 == 1 ? 1 : 0)
     }
 
     for (let i = 0; i < generateLength; i++) {
@@ -152,9 +156,9 @@ function generateTestcaseString(testcaseParameter: TestcaseParameter): string {
     }
 
     if (testcaseParameter.stringGeneratePalindrome) {
-        let randomStringCharsLength = randomStringChars.length;
+        let randomStringCharsLength = randomStringChars.length
         for (let i = randomStringCharsLength - (stringLength % 2 == 1 ? 2 : 1); i >= 0; i--) {
-            randomStringChars.push(randomStringChars[i]);
+            randomStringChars.push(randomStringChars[i])
         }
     }
 
@@ -167,8 +171,8 @@ function generateTestcaseBoolean(): boolean {
 }
 
 
-function generateTestcaseArray(testcaseParameter: TestcaseParameter): (number | string | boolean)[] {
-    let randomArray: (number | string | boolean)[] = []
+function generateTestcaseArray(testcaseParameter: TestcaseParameter): number[] | string[] | boolean[] {
+    let randomArray: number[] | string[] | boolean[] = []
     let arrayLength: number
 
     switch (testcaseParameter.arrayDimension1OptionLength) {
@@ -183,16 +187,46 @@ function generateTestcaseArray(testcaseParameter: TestcaseParameter): (number | 
             break
     }
 
-    for (let i = 0; i < arrayLength; i++) {
-        switch (testcaseParameter.parameterArrayType) {
-            case 'number':
-                randomArray.push(generateTestcaseNumber(testcaseParameter))
+    if (testcaseParameter.parameterArrayType === 'number' && testcaseParameter.arrayNumberUnique && !testcaseParameter.numberOptionIncludeDecimal) {
+        switch (testcaseParameter.numberType) {
+            case 'rangeWithExclude':
+                randomArray = generateUniqueRandomNumbersFromRange(
+                    testcaseParameter.numberMinValue,
+                    testcaseParameter.numberMaxValue,
+                    testcaseParameter.numberExcludeValues,
+                    arrayLength
+                )
                 break
-            case 'string':
-                randomArray.push(generateTestcaseString(testcaseParameter))
+            case 'valuesToInclude':
+                randomArray = generateUniqueRandomNumbersFromArray(
+                    testcaseParameter.numberIncludeValues,
+                    arrayLength
+                )
                 break
-            case 'boolean':
-                randomArray.push(generateTestcaseBoolean())
+        }
+    } else {
+        for (let i = 0; i < arrayLength; i++) {
+            switch (testcaseParameter.parameterArrayType) {
+                case 'number':
+                    (randomArray as number[]).push(generateTestcaseNumber(testcaseParameter))
+                    break
+                case 'string':
+                    (randomArray as string[]).push(generateTestcaseString(testcaseParameter))
+                    break
+                case 'boolean':
+                    (randomArray as boolean[]).push(generateTestcaseBoolean())
+                    break
+            }
+        }
+    }
+
+    if (testcaseParameter.parameterArrayType === 'number') {
+        switch (testcaseParameter.arrayNumberSorting) {
+            case 'ascending':
+                randomArray = (randomArray as number[]).sort((a, b) => a - b)
+                break
+            case 'descending':
+                randomArray = (randomArray as number[]).sort((a, b) => b - a)
                 break
         }
     }
@@ -201,8 +235,8 @@ function generateTestcaseArray(testcaseParameter: TestcaseParameter): (number | 
 }
 
 
-function generateTestcase2DArray(testcaseParameter: TestcaseParameter): (number | string | boolean)[][] {
-    let randomArray2D: (number | string | boolean)[][] = []
+function generateTestcase2DArray(testcaseParameter: TestcaseParameter): number[][] | string[][] | boolean[][] {
+    let randomArray2D: number[][] | string[][] | boolean[][] = []
     let arrayLength1: number
     let arrayLength2: number
 
@@ -234,22 +268,85 @@ function generateTestcase2DArray(testcaseParameter: TestcaseParameter): (number 
         }
 
     for (let i = 0; i < arrayLength1; i++) {
-        let randomArray: (number | string | boolean)[] = []
+        let randomArray: number[] | string[] | boolean[] = []
         for (let j = 0; j < arrayLength2; j++) {
             switch (testcaseParameter.parameterArrayType) {
                 case 'number':
-                    randomArray.push(generateTestcaseNumber(testcaseParameter))
+                    (randomArray as number[]).push(generateTestcaseNumber(testcaseParameter))
                     break
                 case 'string':
-                    randomArray.push(generateTestcaseString(testcaseParameter))
+                    (randomArray as string[]).push(generateTestcaseString(testcaseParameter))
                     break
                 case 'boolean':
-                    randomArray.push(generateTestcaseBoolean())
+                    (randomArray as boolean[]).push(generateTestcaseBoolean())
                     break
             }
         }
-        randomArray2D.push(randomArray)
+
+        randomArray2D.push(randomArray as (number[] & string[] & boolean[]))
     }
     return randomArray2D
 }
 
+
+function generateUniqueRandomNumbersFromRange(minValue: number, maxValue: number, excludeValues: number[], count: number): number[] {
+    if (maxValue - minValue + 1 - excludeValues.length < count) {
+        throw new Error('Cannot generate specified number of unique numbers between minimum and maximum value')
+    }
+
+    if (maxValue - minValue + 1 - excludeValues.length > 500000) {
+        // Stores generated numbers in a set
+        let generatedNumbers = new Set<number>()
+        for (let i = 0; i < count; i++) {
+            let alreadyGenerated = true
+            while (alreadyGenerated) {
+                let currNumber = generateNumberInRange(minValue, maxValue, excludeValues, false)
+
+                if (!generatedNumbers.has(currNumber)) {
+                    generatedNumbers.add(currNumber)
+                    alreadyGenerated = false
+                }
+            }
+        }
+
+        return Array.from(generatedNumbers)
+    } else {
+        // Implements Fisher-Yates algorithm
+        let excludeValuesSet = new Set(excludeValues)
+        let possibleNumbers: number[] = []
+        for (let i = minValue; i <= maxValue; i++) {
+            if (!excludeValuesSet.has(i)) {
+                possibleNumbers.push(i)
+            }
+        }
+
+        for (let i = possibleNumbers.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1))
+
+            let temp = possibleNumbers[j]
+            possibleNumbers[j] = possibleNumbers[i]
+            possibleNumbers[i] = temp
+        }
+
+        return possibleNumbers.slice(0, count)
+    }
+}
+
+
+function generateUniqueRandomNumbersFromArray(numberArray: number[], count: number): number[] {
+    if (numberArray.length < count) {
+        throw new Error('Cannot generate specified number of unique numbers in number values')
+    }
+
+    let possibleNumbers: number[] = numberArray
+
+    for (let i = possibleNumbers.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1))
+
+        let temp = possibleNumbers[j]
+        possibleNumbers[j] = possibleNumbers[i]
+        possibleNumbers[i] = temp
+    }
+
+    return possibleNumbers.slice(0, count)
+}

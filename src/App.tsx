@@ -29,6 +29,8 @@ function App() {
                     numberMaxValue: 10000,
                     numberExcludeValues: [],
                     numberIncludeValues: [],
+                    arrayNumberSorting: 'none',
+                    arrayNumberUnique: false,
                     stringOptionLength: 'fixed',
                     stringLength: 10,
                     stringRandomMinLength: 10,

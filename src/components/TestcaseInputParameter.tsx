@@ -1,11 +1,12 @@
 
 import { useState } from 'react'
-import { type TestcaseInputParameterProps, type ParameterType, type ParameterArrayType, type NumberType, type OptionLength } from '../model/model'
+import { type TestcaseInputParameterProps, type ParameterType, type ParameterArrayType, type NumberType, type OptionLength, type ArrayNumberSorting } from '../model/model'
 import CheckboxField from './ui/CheckboxField'
 import InputNumberField from './ui/InputNumberField'
 import InputTextField from './ui/InputTextField'
 import RadioButtonTypeOption from './ui/RadioButtonTypeOption'
 import RadioButtonFieldOption from './ui/RadioButtonFieldOption'
+import SelectField from './ui/SelectField'
 
 import styles from './TestcaseInputParameter.module.css'
 
@@ -196,6 +197,8 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
         }
     }
 
+
+
     const handleStringOptionLengthChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
         setParameter(parameterNumber, {
             ...testcaseParameter,
@@ -320,6 +323,20 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
         })
     }
 
+    const handleArrayNumberUniqueChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        setParameter(parameterNumber, {
+            ...testcaseParameter,
+            arrayNumberUnique: event.target.checked
+        })
+    }
+
+    const handleArrayNumberSortingChange: React.ChangeEventHandler<HTMLSelectElement> = (event) => {
+        setParameter(parameterNumber, {
+            ...testcaseParameter,
+            arrayNumberSorting: event.target.value as ArrayNumberSorting
+        })
+    }
+
     return (
         <div className="border border-solid bg-gray-200 rounded p-4 my-2 shadow-lg h-full">
             <div className="flex justify-between">
@@ -412,6 +429,7 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
             <br />
             {testcaseParameter.parameterType === 'array' &&
                 <>
+                    <label className="underline">Array Options</label><br/>
                     <RadioButtonFieldOption
                         onChangeHandler={handleArrayDimension1OptionLengthChange}
                         checked={testcaseParameter.arrayDimension1OptionLength === 'fixed'}
@@ -459,6 +477,7 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
 
             {testcaseParameter.parameterType === '2darray' &&
                 <>
+                    <label className="underline">2D Array Options</label><br/>
                     <label className="mr-2 text-sm font-medium underline text-gray-900">Dimension 1</label>
                     <RadioButtonFieldOption
                         onChangeHandler={handleArrayDimension1OptionLengthChange}
@@ -554,9 +573,34 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
                 </>
             }
 
+            {(['array', '2darray'].includes(testcaseParameter.parameterType) && testcaseParameter.parameterArrayType === 'number') &&
+                <>
+                    <label className="underline">Array Number Options</label><br/>
+                    <CheckboxField
+                        onChangeHandler={handleArrayNumberUniqueChange}
+                        checked={testcaseParameter.arrayNumberUnique}
+                        label="Generate unique numbers"
+                        disabled={testcaseParameter.numberOptionIncludeDecimal ? true : false}
+                        title={testcaseParameter.numberOptionIncludeDecimal ? 'Unique numbers can only be selected for integer values' : undefined}
+                    />
+                    <SelectField
+                        onChangeHandler={handleArrayNumberSortingChange}
+                        label="Sorting"
+                        value={testcaseParameter.arrayNumberSorting}
+                    >
+                        <option value="none">None</option>
+                        <option value="ascending">Ascending</option>
+                        <option value="descending">Descending</option>
+                    </SelectField>
+
+
+                </>
+            }
+
             {(testcaseParameter.parameterType === 'number' ||
              (['array', '2darray'].includes(testcaseParameter.parameterType) && testcaseParameter.parameterArrayType === 'number')) &&
                 <>
+                    <label className="underline">Number Options</label><br/>
                     <CheckboxField
                         onChangeHandler={handleNumberOptionIncludeDecimalChange}
                         checked={testcaseParameter.numberOptionIncludeDecimal}
@@ -613,6 +657,7 @@ function TestcaseInputParameter({ testcaseParameter, setParameter, parameterNumb
             {(testcaseParameter.parameterType === 'string' ||
              (['array', '2darray'].includes(testcaseParameter.parameterType) && testcaseParameter.parameterArrayType === 'string')) &&
                 <>
+                    <label className="underline">String Options</label><br/>
                     <RadioButtonFieldOption
                         onChangeHandler={handleStringOptionLengthChange}
                         checked={testcaseParameter.stringOptionLength === 'fixed'}
